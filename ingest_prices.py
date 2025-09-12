@@ -70,7 +70,7 @@ if "data" in data:
           if 'tcgplayer' not in card: # some cards will not have a 'tcgplayer' hush and therefore won't give us market price
             data_timestamp = datetime.now().isoformat()
             data_card_version = "NA (no tcg)"
-            data_card_price = None
+            data_price = None
             cursor.execute(
               "INSERT OR IGNORE INTO card_prices_record(timestamp, tcg, set_id, card_id, card_name, card_version, price, currency)" \
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -151,7 +151,7 @@ if "data" in data:
           else: # sometimes card will have 'tcgplayer' hush but no price info
             date_timestamp = datetime.now().isoformat()
             data_card_version = "NA (no prices)"
-            data_card_price = None
+            data_price = None
                 
             cursor.execute(
                 "INSERT OR IGNORE INTO card_prices_record(timestamp, tcg, set_id, card_id, card_name, card_version, price, currency)" \
@@ -256,7 +256,7 @@ for deck in data:
     url = "https://optcgapi.com/api/decks/" + data_deck_id + "/"
     response = requests.get(url)
     data = response.json()
-
+ 
     if len(data) > 1:
       for card in data:
         data_timestamp = datetime.now().isoformat()

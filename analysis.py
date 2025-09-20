@@ -8,6 +8,7 @@ import requests
 import json
 import matplotlib.pyplot as plt
 import matplotlib
+matplotlib.use('Agg')
 np.set_printoptions(legacy='1.25')
 
 def calculate_movers(tcg, set_name):
@@ -153,11 +154,13 @@ def calculate_movers(tcg, set_name):
                         else:
                             n += 1
                             if n%2 == 0: m += 1
-                            before = str(data.today() - timedelta(days = ago2))
+                            before = str(date.today() - timedelta(days = ago2))
                             card = set_cards[set_cards['card_id'] == set_cards_today.iloc[i].loc['card_id']]
                             card = card[card['card_version'] == set_cards_today.iloc[i].loc['card_version']]
                             card_before = card[card['timestamp'].str.contains(before)]
-                            price_before = card_before.iloc[i].loc['price']
+                            if len(card_before) == 0: 
+                                price_before = None
+                            else: price_before = card_before.iloc[0].loc['price']
                     if price_before == 0: 
                         ppc = float('inf')
                         ago2 = ago
@@ -177,6 +180,7 @@ def calculate_movers(tcg, set_name):
 
                 i += 1
         elif len(set_cards_today) > len(set_cards_before):
+            # print("before less than today")
             while i != len(set_cards_today):
                 if i < len(set_cards_before):
                     j = 0
@@ -186,8 +190,8 @@ def calculate_movers(tcg, set_name):
                         if j < len(set_cards_before):
                             j += 1
                         if j >= len(set_cards_before)-1:
-                            print(set_cards_today.iloc[i].loc['card_id'] + " " + set_cards_today.iloc[i].loc['card_version'] +
-                                  " -- " + set_cards_before.iloc[j].loc['card_id'] + " " + set_cards_before.iloc[j].loc['card_version'])
+                            # print(set_cards_today.iloc[i].loc['card_id'] + " " + set_cards_today.iloc[i].loc['card_version'] +
+                            #       " -- " + set_cards_before.iloc[j].loc['card_id'] + " " + set_cards_before.iloc[j].loc['card_version'])
                             not_found = True
                     
                     card_ids.append(set_cards_today.iloc[i].loc['card_id'])
@@ -216,11 +220,13 @@ def calculate_movers(tcg, set_name):
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
-                                before = str(data.today() - timedelta(days = ago2))
-                                card = set_cards[set_cards['card_id'] == set_cards_before.iloc[i].loc['card_id']]
-                                card = card[card['card_version'] == set_cards_before.iloc[i].loc['card_version']]
+                                before = str(date.today() - timedelta(days = ago2))
+                                card = set_cards[set_cards['card_id'] == set_cards_today.iloc[i].loc['card_id']]
+                                card = card[card['card_version'] == set_cards_today.iloc[i].loc['card_version']]
                                 card_before = card[card['timestamp'].str.contains(before)]
-                                price_before = card_before.iloc[0].loc['price']
+                                if len(card_before) == 0: 
+                                    price_before = None
+                                else: price_before = card_before.iloc[0].loc['price']
                         if price_before == 0: 
                             ppc = float('inf')
                             ago2 = ago
@@ -244,11 +250,11 @@ def calculate_movers(tcg, set_name):
                     not_found = False
                     while ((set_cards_today.iloc[i].loc['card_id'] != set_cards_before.iloc[j].loc['card_id']) or
                         (set_cards_today.iloc[i].loc['card_version'] != set_cards_before.iloc[j].loc['card_version'])) and not_found == False:
-                        if j < len(set_cards_before):
+                        if j < len(set_cards_before)-1:
                             j += 1
-                        if j >= len(set_cards_before):
-                            print(set_cards_before.iloc[i].loc['card_id'] + " " + set_cards_before.iloc[i].loc['card_version'] +
-                                  " -- " + set_cards_today.iloc[j].loc['card_id'] + " " + set_cards_today.iloc[j].loc['card_version'])
+                        if j >= len(set_cards_before)-1:
+                            # print(set_cards_before.iloc[i].loc['card_id'] + " " + set_cards_before.iloc[i].loc['card_version'] +
+                            #       " -- " + set_cards_today.iloc[j].loc['card_id'] + " " + set_cards_today.iloc[j].loc['card_version'])
                             not_found = True
                     
                     card_ids.append(set_cards_today.iloc[i].loc['card_id'])
@@ -277,11 +283,13 @@ def calculate_movers(tcg, set_name):
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
-                                before = str(data.today() - timedelta(days = ago2))
-                                card = set_cards[set_cards['card_id'] == set_cards_before.iloc[i].loc['card_id']]
-                                card = card[card['card_version'] == set_cards_before.iloc[i].loc['card_version']]
+                                before = str(date.today() - timedelta(days = ago2))
+                                card = set_cards[set_cards['card_id'] == set_cards_today.iloc[i].loc['card_id']]
+                                card = card[card['card_version'] == set_cards_today.iloc[i].loc['card_version']]
                                 card_before = card[card['timestamp'].str.contains(before)]
-                                price_before = card_before.iloc[0].loc['price']
+                                if len(card_before) == 0: 
+                                    price_before = None
+                                else: price_before = card_before.iloc[0].loc['price']
                         if price_before == 0: 
                             ppc = float('inf')
                             ago2 = ago
@@ -301,6 +309,7 @@ def calculate_movers(tcg, set_name):
 
                     i += 1
         elif len(set_cards_today) < len(set_cards_before):
+            # print("today less than before")
             while i != len(set_cards_before):
                 if i < len(set_cards_today):
                     j = 0
@@ -310,8 +319,8 @@ def calculate_movers(tcg, set_name):
                         if j < len(set_cards_today):
                             j += 1
                         if j >= len(set_cards_today)-1:
-                            print(set_cards_before.iloc[i].loc['card_id'] + " " + set_cards_before.iloc[i].loc['card_version'] +
-                                  " -- " + set_cards_today.iloc[j].loc['card_id'] + " " + set_cards_today.iloc[j].loc['card_version'])
+                            # print(set_cards_before.iloc[i].loc['card_id'] + " " + set_cards_before.iloc[i].loc['card_version'] +
+                            #       " -- " + set_cards_today.iloc[j].loc['card_id'] + " " + set_cards_today.iloc[j].loc['card_version'])
                             not_found = True
                     
                     card_ids.append(set_cards_before.iloc[i].loc['card_id'])
@@ -340,11 +349,13 @@ def calculate_movers(tcg, set_name):
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
-                                before = str(data.today() - timedelta(days = ago2))
+                                before = str(date.today() - timedelta(days = ago2))
                                 card = set_cards[set_cards['card_id'] == set_cards_before.iloc[i].loc['card_id']]
                                 card = card[card['card_version'] == set_cards_before.iloc[i].loc['card_version']]
                                 card_before = card[card['timestamp'].str.contains(before)]
-                                price_before = card_before.iloc[0].loc['price']
+                                if len(card_before) == 0: 
+                                    price_before = None
+                                else: price_before = card_before.iloc[0].loc['price']
                         if price_before == 0: 
                             ppc = float('inf')
                             ago2 = ago
@@ -371,8 +382,8 @@ def calculate_movers(tcg, set_name):
                         if j < len(set_cards_today):
                             j += 1
                         if j >= len(set_cards_today):
-                            print(set_cards_before.iloc[i].loc['card_id'] + " " + set_cards_before.iloc[i].loc['card_version'] +
-                                  " -- " + set_cards_today.iloc[j].loc['card_id'] + " " + set_cards_today.iloc[j].loc['card_version'])
+                            # print(set_cards_before.iloc[i].loc['card_id'] + " " + set_cards_before.iloc[i].loc['card_version'] +
+                            #       " -- " + set_cards_today.iloc[j].loc['card_id'] + " " + set_cards_today.iloc[j].loc['card_version'])
                             not_found = True
                     
                     card_ids.append(set_cards_before.iloc[i].loc['card_id'])
@@ -401,11 +412,13 @@ def calculate_movers(tcg, set_name):
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
-                                before = str(data.today() - timedelta(days = ago2))
+                                before = str(date.today() - timedelta(days = ago2))
                                 card = set_cards[set_cards['card_id'] == set_cards_before.iloc[i].loc['card_id']]
                                 card = card[card['card_version'] == set_cards_before.iloc[i].loc['card_version']]
                                 card_before = card[card['timestamp'].str.contains(before)]
-                                price_before = card_before.iloc[0].loc['price']
+                                if len(card_before) == 0: 
+                                    price_before = None
+                                else: price_before = card_before.iloc[0].loc['price']
                         if price_before == 0: 
                             ppc = float('inf')
                             ago2 = ago
@@ -451,18 +464,41 @@ def calculate_movers(tcg, set_name):
     # CLOSING OUT OF DATABASE (can put earlier in code if I want)
     conn.close()
 
-def generate_image(card_id):
-    url = "https://api.pokemontcg.io/v2/cards/" + card_id
-    headers = {
-        "X-Api-Key": "8fd8acd5-6cbc-4e2f-bc2a-1b633aee675c"
-    }
+def generate_image(tcg, card_id):
+    if tcg.lower() == "pokemon":
+        url = "https://api.pokemontcg.io/v2/cards/" + card_id
+        headers = {
+            "X-Api-Key": "8fd8acd5-6cbc-4e2f-bc2a-1b633aee675c"
+        }
 
-    response = requests.get(url, headers=headers)
-    # while response.status_code != 200:
-    #     response = requests.get(url, headers=headers)
-    data = response.json()
+        response = requests.get(url, headers=headers)
+        while response.status_code != 200:
+            response = requests.get(url, headers=headers)
+        data = response.json()
 
-    return(data['data']['images']['large'])
+        return(data['data']['images']['large'])
+    
+    if tcg.lower() == "lorcana":
+        url = "https://api.lorcast.com/v0/cards/" + card_id
+
+        response = requests.get(url)
+        while response.status_code != 200:
+            response = requests.get(url)
+        data = response.json()
+
+        return(data['image_uris']['digital']['large'])
+    
+    if tcg.lower() == "one piece":
+        url = "https://optcgapi.com/api/sets/card/" + card_id + "/"
+
+        response = requests.get(url)
+        data = response.json()
+        if 'error' in data:
+            url = "https://optcgapi.com/api/decks/card/" + card_id + "/"
+            response = requests.get(url)
+            data = response.json()
+
+        return(data[0]['card_image'])
 
 def create_graph(id, version, days):
     # CONNECTING TO DATABASE RECORD
@@ -508,4 +544,6 @@ def create_graph(id, version, days):
     return fig
 
 
-# print(calculate_movers("Pokemon", "Rebel Clash"))
+# print(calculate_movers("Lorcana", "Challenge Promo"))
+# print(generate_image("One Piece", "ST01-016"))
+# print(create_graph("swsh2-3", "Holofoil"))

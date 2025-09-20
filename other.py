@@ -8,4 +8,13 @@ import requests
 import json
 np.set_printoptions(legacy='1.25')
 
-print(type(float('inf')))
+card_id = "ST01-016"
+url = "https://optcgapi.com/api/sets/card/" + card_id + "/"
+response = requests.get(url)
+data = response.json()
+if 'error' in data:
+    url = "https://optcgapi.com/api/decks/card/" + card_id + "/"
+    response = requests.get(url)
+    data = response.json()
+
+print(data[0]['card_image'])

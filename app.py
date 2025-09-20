@@ -4,7 +4,9 @@ import requests
 import pandas as pd
 import sqlite3
 import json
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 
 # TO GENERATE DATAFRAMES FOR MOVERS
 def movers(tcg, set_name):
@@ -14,10 +16,11 @@ def movers(tcg, set_name):
     return result
 
 # SELECT CARD ID AND GET IMAGE OF CARD
-def card_image(dataframe, select_data: gr.SelectData):
-    card_id = select_data.value
+def card_image(tcg, dataframe, select_data: gr.SelectData):
+    row = select_data.row_value
+    card_id = row[0]
     
-    return analysis.generate_image(card_id)
+    return analysis.generate_image(tcg, card_id)
 
 # SELECT CARD ID AND GET GRAPH OF CARD
 def card_graph(dataframe, select_data: gr.SelectData):
@@ -118,7 +121,7 @@ with gr.Blocks() as demo:
 
     top_10.select(
         fn = card_image,
-        inputs = [top_10],
+        inputs = [tcg_name, top_10],
         outputs = [image]
     )
     top_10.select(
@@ -128,7 +131,7 @@ with gr.Blocks() as demo:
     )
     bottom_10.select(
         fn = card_image,
-        inputs = [bottom_10],
+        inputs = [tcg_name, bottom_10],
         outputs = [image]
     )
     bottom_10.select(

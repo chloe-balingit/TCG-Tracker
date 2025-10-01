@@ -34,6 +34,7 @@ def calculate_movers(tcg, set_name):
         while response.status_code != 200:
             response = requests.get(url, headers=headers)
         data = response.json()
+        # print("API connected")
         if len(data['data']) == 0:
             return("Set not found -- Check spelling of input or whether set available in data")
         set_id = data['data'][0]['id']
@@ -103,6 +104,7 @@ def calculate_movers(tcg, set_name):
             if j % 2 == 0: i += 1
             before = str(date.today() - timedelta(days = ago))
             set_cards_before = set_cards[set_cards['timestamp'].str.contains(before)]
+            # print(before)
     
     if(ago == 0): return("No market price data from the last 14 days")
     else:
@@ -116,6 +118,7 @@ def calculate_movers(tcg, set_name):
         days_apart = []
         i = 0
         if len(set_cards_today) == len(set_cards_before):
+            # print("length today = length before")
             while i != len(set_cards_today):
                 j = i
                 not_found = False
@@ -150,7 +153,7 @@ def calculate_movers(tcg, set_name):
                         # if there is no need to go searching for cards, ago2 = ago -- if there is a need, ago2 = data of other card BUT has to reset to ago2 = ago after ago2 is recorded
                         ago2 = 7
                         ago2 += ( (-1)**n ) * (m)
-                        if ago2 == 0: price_before == 0
+                        if ago2 == 0: price_before = 0
                         else:
                             n += 1
                             if n%2 == 0: m += 1
@@ -180,7 +183,8 @@ def calculate_movers(tcg, set_name):
 
                 i += 1
         elif len(set_cards_today) > len(set_cards_before):
-            # print("before less than today")
+            # print("length today > length before -- " + str(len(set_cards_today)) + " > " + str(len(set_cards_before)))
+            card_number = 1
             while i != len(set_cards_today):
                 if i < len(set_cards_before):
                     j = 0
@@ -200,7 +204,10 @@ def calculate_movers(tcg, set_name):
                     price_today = set_cards_today.iloc[i].loc['price']
                     if not_found == True:
                         price_before = None
-                    else: price_before = set_cards_before.iloc[j].loc['price']
+                        # print(str(card_number) + " not found right away")
+                    else: 
+                        price_before = set_cards_before.iloc[j].loc['price']
+                        # print(str(card_number) + "found")
 
                     ago2 = ago
                     if (price_today == None or price_today == "null") and (price_before == None or price_before == "null"):
@@ -216,7 +223,9 @@ def calculate_movers(tcg, set_name):
                             # if there is no need to go searching for cards, ago2 = ago -- if there is a need, ago2 = data of other card BUT has to reset to ago2 = ago after ago2 is recorded
                             ago2 = 7
                             ago2 += ( (-1)**n ) * (m)
-                            if ago2 == 0: price_before == 0
+                            if ago2 == 0: 
+                                price_before = 0
+                                # print(str(card_number) + " is 0")
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
@@ -226,12 +235,17 @@ def calculate_movers(tcg, set_name):
                                 card_before = card[card['timestamp'].str.contains(before)]
                                 if len(card_before) == 0: 
                                     price_before = None
-                                else: price_before = card_before.iloc[0].loc['price']
+                                    # print(str(card_number) + "not found " + str(ago2) + " days ago")
+                                else: 
+                                    price_before = card_before.iloc[0].loc['price']
+                                    # print(str(card_number) + " found " + str(ago2) + " days ago")
                         if price_before == 0: 
                             ppc = float('inf')
                             ago2 = ago
+                            # print("ppc for price=0 inserted")
                         else: 
                             ppc = ( (price_today - price_before) / price_before ) * 100
+                            # print("ppc for price!=0 inserted")
                     elif price_today == None or price_today == "null":
                         price_today = 0 
                         ppc = ( (price_today - price_before) / price_before ) * 100
@@ -279,7 +293,7 @@ def calculate_movers(tcg, set_name):
                             # if there is no need to go searching for cards, ago2 = ago -- if there is a need, ago2 = data of other card BUT has to reset to ago2 = ago after ago2 is recorded
                             ago2 = 7
                             ago2 += ( (-1)**n ) * (m)
-                            if ago2 == 0: price_before == 0
+                            if ago2 == 0: price_before = 0
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
@@ -308,8 +322,10 @@ def calculate_movers(tcg, set_name):
                     ago2 = ago
 
                     i += 1
+                # print(str(card_number))
+                card_number += 1
         elif len(set_cards_today) < len(set_cards_before):
-            # print("today less than before")
+            # print("length today < length before -- " + str(len(set_cards_today)) + " < " + str(len(set_cards_before)))
             while i != len(set_cards_before):
                 if i < len(set_cards_today):
                     j = 0
@@ -345,7 +361,7 @@ def calculate_movers(tcg, set_name):
                             # if there is no need to go searching for cards, ago2 = ago -- if there is a need, ago2 = data of other card BUT has to reset to ago2 = ago after ago2 is recorded
                             ago2 = 7
                             ago2 += ( (-1)**n ) * (m)
-                            if ago2 == 0: price_before == 0
+                            if ago2 == 0: price_before = 0
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
@@ -408,7 +424,7 @@ def calculate_movers(tcg, set_name):
                             # if there is no need to go searching for cards, ago2 = ago -- if there is a need, ago2 = data of other card BUT has to reset to ago2 = ago after ago2 is recorded
                             ago2 = 7
                             ago2 += ( (-1)**n ) * (m)
-                            if ago2 == 0: price_before == 0
+                            if ago2 == 0: price_before = 0
                             else:
                                 n += 1
                                 if n%2 == 0: m += 1
@@ -544,6 +560,6 @@ def create_graph(id, version, days):
     return fig
 
 
-# print(calculate_movers("Lorcana", "Challenge Promo"))
+# print(calculate_movers("Pokemon", "Mega Evolution"))
 # print(generate_image("One Piece", "ST01-016"))
 # print(create_graph("swsh2-3", "Holofoil"))

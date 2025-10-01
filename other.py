@@ -8,13 +8,19 @@ import requests
 import json
 np.set_printoptions(legacy='1.25')
 
-card_id = "ST01-016"
-url = "https://optcgapi.com/api/sets/card/" + card_id + "/"
-response = requests.get(url)
-data = response.json()
-if 'error' in data:
-    url = "https://optcgapi.com/api/decks/card/" + card_id + "/"
-    response = requests.get(url)
-    data = response.json()
+conn = sqlite3.connect("tcg_market.db")
+cursor = conn.cursor()
 
-print(data[0]['card_image'])
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS auto_test (
+        timestamp DATETIME,
+        done TEXT
+    )
+''')
+
+cursor.execute(
+    "INSERT INTO auto_test(timestamp, done) VALUES (?, ?)", (datetime.now(), "Auto Test")
+)
+
+conn.commit()
+conn.close()
